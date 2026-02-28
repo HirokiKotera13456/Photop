@@ -26,7 +26,7 @@
 ## 2. ユーザーフロー
 
 ```
-1. Googleアカウントでログイン
+1. メール/パスワードでサインアップ or ログイン
 2. 招待コードを作成 or 受け取った招待コードを入力してペアリング
 3. 写真を投稿（Instagramのように）
 4. 相手の写真にいいね・コメント
@@ -43,9 +43,9 @@
 | 項目 | 仕様 |
 |------|------|
 | 認証基盤 | Supabase Auth |
-| ログイン方式 | Google OAuth |
+| ログイン方式 | メール/パスワード認証 |
 | セッション管理 | Supabase Auth（JWT + リフレッシュトークン） |
-| プロフィール | 表示名、アバター画像（Google情報を初期値） |
+| プロフィール | 表示名、アバター画像（サインアップ時に設定） |
 
 ### 3.2 ペアリング（2人の紐付け）
 
@@ -114,7 +114,7 @@
 
 | 画面名 | ファイルパス | URL | 概要 |
 |--------|-------------|-----|------|
-| ランディング | `pages/index.tsx` | `/` | サービス紹介 + Googleログイン |
+| ランディング | `pages/index.tsx` | `/` | サービス紹介 + ログイン/サインアップ |
 | ペアリング | `pages/pairing.tsx` | `/pairing` | 招待コード生成 / 入力 |
 | フィード | `pages/feed.tsx` | `/feed` | Instagram風の写真フィード（メイン画面） |
 | 写真投稿 | `pages/post.tsx` | `/post` | 写真選択 → プレビュー → キャプション → 投稿 |
@@ -159,7 +159,7 @@
 - **テスト**: Vitest + React Testing Library + Playwright (E2E)
 
 ### 6.2 バックエンド（Supabase）
-- **認証**: Supabase Auth（Google OAuth）
+- **認証**: Supabase Auth（メール/パスワード認証）
 - **DB**: Supabase PostgreSQL
 - **クライアント**: `@supabase/supabase-js` + `supabase gen types`
 - **API**: Next.js API Routes（`/pages/api/*`）
@@ -275,9 +275,10 @@ monthly_bests
 - [x] プロダクト仕様書の作成（本ドキュメント）
 
 ### フェーズ2: DB設計 & API仕様
-- [ ] Supabase マイグレーションSQL（テーブル + RLSポリシー）
-- [ ] Supabase RPC関数（ベスト確定処理など）
-- [ ] API仕様書（クライアント呼び出し定義）
+- [x] Supabase マイグレーションSQL（テーブル + RLSポリシー）
+- [x] Supabase RPC関数（ベスト確定処理など）
+- [x] Storage バケット & ポリシー
+- [x] API仕様書（クライアント呼び出し定義）
 
 ### フェーズ3: テスト仕様
 - [ ] ユニットテスト仕様（Vitest — バリデーション・ビジネスロジック）
@@ -285,9 +286,9 @@ monthly_bests
 - [ ] E2Eテスト仕様（Playwright）
 
 ### フェーズ4: 実装
-- [ ] Supabase プロジェクトセットアップ（Google OAuth設定）
+- [ ] Supabase プロジェクトセットアップ（メール/パスワード認証設定）
 - [ ] DBマイグレーション適用 & RLS設定
-- [ ] 認証フロー（Google OAuth + profiles連携）
+- [ ] 認証フロー（メール/パスワード認証 + profiles連携）
 - [ ] ペアリング機能
 - [ ] 写真投稿機能（Supabase Storage）
 - [ ] フィード画面（Instagramライク）
