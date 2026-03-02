@@ -1,10 +1,12 @@
 import { Box, Button, CircularProgress, Typography } from '@mui/material';
+import { useRouter } from 'next/router';
 import { usePhotos } from '@/src/hooks/usePhotos';
 import PhotoCard from './PhotoCard';
 import type { Tables } from '@/src/types/database';
 
 export default function FeedList() {
   const { photos, feedQuery } = usePhotos();
+  const router = useRouter();
 
   if (feedQuery.isLoading) {
     return (
@@ -17,9 +19,12 @@ export default function FeedList() {
   if (photos.length === 0) {
     return (
       <Box sx={{ textAlign: 'center', py: 6 }}>
-        <Typography color="text.secondary">
+        <Typography color="text.secondary" sx={{ mb: 2 }}>
           まだ写真がありません。最初の写真を投稿しましょう!
         </Typography>
+        <Button variant="contained" onClick={() => router.push('/post')}>
+          写真を投稿する
+        </Button>
       </Box>
     );
   }

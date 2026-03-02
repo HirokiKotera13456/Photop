@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/src/lib/supabase/client';
 import { useAuth } from './useAuth';
 import { formatMonth } from '@/src/lib/utils';
+import { QUERY_KEYS } from '@/src/lib/constants';
 import type { Tables } from '@/src/types/database';
 
 export function useMonthlyBest() {
@@ -10,7 +11,7 @@ export function useMonthlyBest() {
   const currentMonth = formatMonth();
 
   const myPhotosQuery = useQuery<Tables<'photos'>[]>({
-    queryKey: ['my-photos-month', user?.id, currentMonth],
+    queryKey: QUERY_KEYS.monthlyBest.photos(user?.id, currentMonth),
     queryFn: async () => {
       if (!user) return [];
       const { data, error } = await supabase
@@ -26,7 +27,7 @@ export function useMonthlyBest() {
   });
 
   const mySelectionQuery = useQuery<Tables<'monthly_bests'> | null>({
-    queryKey: ['my-best-selection', user?.id, currentMonth],
+    queryKey: QUERY_KEYS.monthlyBest.selection(user?.id, currentMonth),
     queryFn: async () => {
       if (!user) return null;
       const { data, error } = await supabase

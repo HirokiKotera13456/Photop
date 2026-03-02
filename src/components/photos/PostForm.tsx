@@ -7,11 +7,13 @@ import {
   Typography,
   Alert,
   IconButton,
+  LinearProgress,
 } from '@mui/material';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import CloseIcon from '@mui/icons-material/Close';
 import { usePhotos } from '@/src/hooks/usePhotos';
 import { validateFileSize, validateMimeType } from '@/src/lib/utils';
+import { compressImage } from '@/src/lib/compressImage';
 
 export default function PostForm() {
   const { uploadPhoto } = usePhotos();
@@ -21,8 +23,9 @@ export default function PostForm() {
   const [preview, setPreview] = useState<string | null>(null);
   const [caption, setCaption] = useState('');
   const [error, setError] = useState('');
+  const [compressing, setCompressing] = useState(false);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (!selected) return;
 
@@ -36,10 +39,21 @@ export default function PostForm() {
     }
 
     setError('');
-    setFile(selected);
-    const reader = new FileReader();
-    reader.onload = (ev) => setPreview(ev.target?.result as string);
-    reader.readAsDataURL(selected);
+    setCompressing(true);
+    try {
+      const compressed = await compressImage(selected);
+      setFile(compressed);
+      const reader = new FileReader();
+      reader.onload = (ev) => setPreview(ev.target?.result as string);
+      reader.readAsDataURL(compressed);
+    } catch {
+      setFile(selected);
+      const reader = new FileReader();
+      reader.onload = (ev) => setPreview(ev.target?.result as string);
+      reader.readAsDataURL(selected);
+    } finally {
+      setCompressing(false);
+    }
   };
 
   const handleClear = () => {
@@ -63,6 +77,7 @@ export default function PostForm() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {error && <Alert severity="error">{error}</Alert>}
+      {compressing && <LinearProgress />}
 
       <input
         ref={fileInputRef}
@@ -122,7 +137,7 @@ export default function PostForm() {
         variant="contained"
         size="large"
         onClick={handleSubmit}
-        disabled={!file || uploadPhoto.isPending}
+        disabled={!file || uploadPhoto.isPending || compressing}
         fullWidth
       >
         {uploadPhoto.isPending ? '投稿中...' : '投稿する'}

@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
+import { ALLOWED_MIME_TYPES, MAX_FILE_SIZE } from './constants';
 
 export function formatMonth(date?: Date | string): string {
   const d = date ? new Date(date) : new Date();
@@ -27,13 +28,9 @@ export function formatDisplayMonth(month: string): string {
   return `${year}年${parseInt(m)}月`;
 }
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-
 export function validateFileSize(bytes: number): boolean {
   return bytes <= MAX_FILE_SIZE;
 }
-
-const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 export function validateMimeType(type: string): boolean {
   return ALLOWED_MIME_TYPES.includes(type);

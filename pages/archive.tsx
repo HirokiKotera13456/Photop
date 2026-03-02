@@ -5,6 +5,7 @@ import AuthGuard from '@/src/components/layout/AuthGuard';
 import ArchiveCard from '@/src/components/archive/ArchiveCard';
 import MonthNavigator from '@/src/components/archive/MonthNavigator';
 import { useArchive } from '@/src/hooks/useArchive';
+import type { ArchiveItem } from '@/src/hooks/useArchive';
 
 function ArchiveContent() {
   const { archive, isLoading } = useArchive();
@@ -12,7 +13,7 @@ function ArchiveContent() {
 
   const months = useMemo(() => {
     const set = new Set<string>();
-    for (const item of archive as any[]) {
+    for (const item of archive) {
       set.add(item.month);
     }
     return Array.from(set);
@@ -20,7 +21,7 @@ function ArchiveContent() {
 
   const currentMonthBest = useMemo(() => {
     if (months.length === 0) return null;
-    return (archive as any[]).find((item: any) => item.month === months[monthIndex]) ?? null;
+    return archive.find((item: ArchiveItem) => item.month === months[monthIndex]) ?? null;
   }, [archive, months, monthIndex]);
 
   if (isLoading) {

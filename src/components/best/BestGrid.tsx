@@ -1,4 +1,4 @@
-import { Box, ImageList, ImageListItem, Typography, CircularProgress, Alert } from '@mui/material';
+import { Box, ImageList, ImageListItem, Typography, CircularProgress, Alert, Skeleton } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useMonthlyBest } from '@/src/hooks/useMonthlyBest';
 import { usePhotoUrl } from '@/src/hooks/usePhotos';
@@ -8,33 +8,54 @@ function BestPhotoItem({
   photo,
   isSelected,
   onSelect,
+  isSelecting,
 }: {
   photo: Tables<'photos'>;
   isSelected: boolean;
   onSelect: () => void;
+  isSelecting: boolean;
 }) {
-  const { data: imageUrl } = usePhotoUrl(photo.storage_path);
+  const { data: imageUrl, isLoading: imageLoading } = usePhotoUrl(photo.storage_path);
 
   return (
     <ImageListItem
       onClick={onSelect}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelect();
+        }
+      }}
+      tabIndex={0}
+      role="button"
+      aria-label={`${photo.caption ?? '写真'}${isSelected ? '（選択中）' : ''}`}
+      aria-pressed={isSelected}
       sx={{
-        cursor: 'pointer',
+        cursor: isSelecting ? 'wait' : 'pointer',
         position: 'relative',
         border: isSelected ? '3px solid' : '3px solid transparent',
         borderColor: isSelected ? 'primary.main' : 'transparent',
         borderRadius: 1,
         overflow: 'hidden',
+        opacity: isSelecting ? 0.7 : 1,
+        outline: 'none',
+        '&:focus-visible': {
+          boxShadow: '0 0 0 2px',
+          borderColor: 'primary.light',
+        },
       }}
     >
-      {imageUrl && (
+      {imageLoading ? (
+        <Skeleton variant="rectangular" sx={{ width: '100%', height: 200 }} />
+      ) : imageUrl ? (
         <Box
           component="img"
           src={imageUrl}
           alt={photo.caption ?? '写真'}
+          loading="lazy"
           sx={{ width: '100%', height: 200, objectFit: 'cover' }}
         />
-      )}
+      ) : null}
       {isSelected && (
         <CheckCircleIcon
           color="primary"
@@ -89,6 +110,7 @@ export default function BestGrid() {
             photo={photo}
             isSelected={mySelection?.photo_id === photo.id}
             onSelect={() => selectBest.mutate(photo.id)}
+            isSelecting={selectBest.isPending}
           />
         ))}
       </ImageList>

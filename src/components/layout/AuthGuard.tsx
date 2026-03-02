@@ -5,10 +5,9 @@ import { useAuth } from '@/src/hooks/useAuth';
 
 interface AuthGuardProps {
   children: ReactNode;
-  requirePair?: boolean;
 }
 
-export default function AuthGuard({ children, requirePair = false }: AuthGuardProps) {
+export default function AuthGuard({ children }: AuthGuardProps) {
   const { user, loading } = useAuth();
   const router = useRouter();
 
