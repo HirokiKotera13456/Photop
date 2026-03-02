@@ -1,40 +1,120 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# Photop — 個人フォトポートフォリオ & 月間ベストアプリ
 
-## Getting Started
+自分の写真を投稿し、毎月ベストショットを選ぶ個人ポートフォリオWebアプリです。
+写真の記録と振り返りを習慣化するためのシンプルなツールとして設計されています。
 
-First, run the development server:
+## 主な機能
+
+- **写真投稿** — JPEG / PNG / WebP（最大10MB）をキャプション付きで投稿
+- **フィード** — 自分の写真を時系列で一覧表示
+- **月間ベスト選出** — 今月の写真の中からベスト1枚を選択（月末まで変更可能）
+- **アーカイブ** — 過去の月間ベストを月送りで振り返り
+- **プロフィール編集** — 表示名の変更
+
+## 技術スタック
+
+| カテゴリ | 技術 |
+|---|---|
+| フレームワーク | Next.js (Pages Router) + TypeScript |
+| UI | MUI (Material UI) v6 |
+| 状態管理 | TanStack Query + React Context |
+| フォーム | React Hook Form + Zod |
+| 認証・DB・Storage | Supabase (Auth / PostgreSQL / Storage) |
+| ホスティング | Vercel |
+
+## 開発プロセス
+
+このプロジェクトは **スペック駆動開発 (SDD)** で構築されています。
+
+1. **仕様策定** → `docs/requirement.md`
+2. **DB設計 & API仕様** → `supabase/migrations/`, `docs/api-spec.md`, `docs/db-design.md`
+3. **テスト仕様** → `docs/test-spec-*.md`
+4. **実装** → `src/`, `pages/`
+
+## セットアップ
+
+### 前提条件
+
+- Node.js 18+
+- Supabase プロジェクト（または Supabase CLI でローカル起動）
+
+### インストール
+
+```bash
+npm install
+```
+
+### 環境変数
+
+`.env.example` をコピーして `.env.local` を作成し、Supabase の URL と anon key を設定してください。
+
+```bash
+cp .env.example .env.local
+```
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### DB マイグレーション
+
+Supabase SQL Editor または CLI で `supabase/migrations/` 内の SQL を順番に実行してください。
+
+```
+00001_create_tables.sql
+00002_create_rls_policies.sql
+00003_create_functions.sql
+00004_create_storage.sql
+```
+
+### 開発サーバー起動
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+http://localhost:3000 でアプリが開きます。
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## ページ構成
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+| パス | 画面 |
+|---|---|
+| `/` | ランディング（ログイン / サインアップ） |
+| `/feed` | 写真フィード |
+| `/post` | 写真投稿 |
+| `/photos/[photoId]` | 写真詳細 |
+| `/best` | 月間ベスト選出 |
+| `/archive` | 月別アーカイブ |
+| `/settings` | プロフィール編集・ログアウト |
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+## プロジェクト構成
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── lib/           # Supabaseクライアント、バリデーション、ユーティリティ
+├── types/         # データベース型定義
+├── contexts/      # AuthContext
+├── hooks/         # useAuth, usePhotos, useMonthlyBest, useArchive
+├── components/    # UI コンポーネント
+│   ├── layout/    # Layout, BottomNav, AuthGuard
+│   ├── auth/      # LoginForm, SignUpForm
+│   ├── photos/    # PostForm, PhotoCard, FeedList, PhotoDetail
+│   ├── best/      # BestGrid
+│   ├── archive/   # ArchiveCard, MonthNavigator
+│   └── settings/  # ProfileEditForm
+└── theme.ts       # MUI カスタムテーマ
 
-## Learn More
+pages/             # Next.js Pages Router
+supabase/
+├── migrations/    # SQL マイグレーション（4ファイル）
+├── functions/     # Edge Function（月次ベスト自動確定）
+└── config.toml    # Supabase ローカル設定
+docs/              # 仕様書・設計書
+```
 
-To learn more about Next.js, take a look at the following resources:
+## ビルド
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+```bash
+npm run build
+```
