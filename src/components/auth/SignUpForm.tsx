@@ -23,7 +23,7 @@ export default function SignUpForm() {
     setError('');
     try {
       await signUp(values.email, values.password, values.displayName);
-      router.push('/pairing');
+      router.push('/feed');
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : '登録に失敗しました';
       setError(msg);

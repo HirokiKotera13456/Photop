@@ -4,7 +4,6 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import Layout from '@/src/components/layout/Layout';
 import AuthGuard from '@/src/components/layout/AuthGuard';
 import ProfileEditForm from '@/src/components/settings/ProfileEditForm';
-import PairInfo from '@/src/components/settings/PairInfo';
 import { useAuth } from '@/src/hooks/useAuth';
 import { supabase } from '@/src/lib/supabase/client';
 import type { Tables } from '@/src/types/database';
@@ -49,13 +48,6 @@ function SettingsContent() {
           {profileQuery.data && (
             <ProfileEditForm currentDisplayName={profileQuery.data.display_name} />
           )}
-
-          <Divider sx={{ my: 3 }} />
-
-          <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 2 }}>
-            ペア情報
-          </Typography>
-          <PairInfo />
 
           <Divider sx={{ my: 3 }} />
 

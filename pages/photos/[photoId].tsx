@@ -5,6 +5,7 @@ import Layout from '@/src/components/layout/Layout';
 import AuthGuard from '@/src/components/layout/AuthGuard';
 import PhotoDetail from '@/src/components/photos/PhotoDetail';
 import { usePhotoDetail } from '@/src/hooks/usePhotos';
+import type { Tables } from '@/src/types/database';
 
 function PhotoDetailContent() {
   const router = useRouter();
@@ -29,7 +30,7 @@ function PhotoDetailContent() {
             <ArrowBackIcon />
           </IconButton>
         </Box>
-        <PhotoDetail photo={photo as any} />
+        <PhotoDetail photo={photo as Tables<'photos'>} />
       </Container>
     </Layout>
   );

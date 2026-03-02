@@ -30,41 +30,10 @@ export interface Database {
         };
         Relationships: [];
       };
-      pairs: {
-        Row: {
-          id: string;
-          user_a_id: string;
-          user_b_id: string | null;
-          invite_code: string | null;
-          invite_expires_at: string | null;
-          status: string;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_a_id: string;
-          user_b_id?: string | null;
-          invite_code?: string | null;
-          invite_expires_at?: string | null;
-          status?: string;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          user_a_id?: string;
-          user_b_id?: string | null;
-          invite_code?: string | null;
-          invite_expires_at?: string | null;
-          status?: string;
-          created_at?: string;
-        };
-        Relationships: [];
-      };
       photos: {
         Row: {
           id: string;
           user_id: string;
-          pair_id: string;
           storage_path: string;
           caption: string | null;
           month: string;
@@ -73,7 +42,6 @@ export interface Database {
         Insert: {
           id?: string;
           user_id: string;
-          pair_id: string;
           storage_path: string;
           caption?: string | null;
           month: string;
@@ -82,7 +50,6 @@ export interface Database {
         Update: {
           id?: string;
           user_id?: string;
-          pair_id?: string;
           storage_path?: string;
           caption?: string | null;
           month?: string;
@@ -90,59 +57,10 @@ export interface Database {
         };
         Relationships: [];
       };
-      likes: {
-        Row: {
-          id: string;
-          user_id: string;
-          photo_id: string;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          photo_id: string;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          photo_id?: string;
-          created_at?: string;
-        };
-        Relationships: [];
-      };
-      comments: {
-        Row: {
-          id: string;
-          user_id: string;
-          photo_id: string;
-          body: string;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          photo_id: string;
-          body: string;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          photo_id?: string;
-          body?: string;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
       monthly_bests: {
         Row: {
           id: string;
-          pair_id: string;
-          selector_id: string;
+          user_id: string;
           photo_id: string;
           month: string;
           is_confirmed: boolean;
@@ -151,8 +69,7 @@ export interface Database {
         };
         Insert: {
           id?: string;
-          pair_id: string;
-          selector_id: string;
+          user_id: string;
           photo_id: string;
           month: string;
           is_confirmed?: boolean;
@@ -161,8 +78,7 @@ export interface Database {
         };
         Update: {
           id?: string;
-          pair_id?: string;
-          selector_id?: string;
+          user_id?: string;
           photo_id?: string;
           month?: string;
           is_confirmed?: boolean;
@@ -174,14 +90,6 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
-      generate_invite_code: {
-        Args: Record<string, never>;
-        Returns: Json;
-      };
-      join_pair: {
-        Args: { code: string };
-        Returns: Json;
-      };
       select_monthly_best: {
         Args: { p_photo_id: string };
         Returns: Json;
@@ -189,14 +97,6 @@ export interface Database {
       confirm_monthly_bests: {
         Args: Record<string, never>;
         Returns: Json;
-      };
-      get_my_pair_id: {
-        Args: Record<string, never>;
-        Returns: string;
-      };
-      is_pair_partner: {
-        Args: { target_user_id: string };
-        Returns: boolean;
       };
     };
     Enums: Record<string, never>;

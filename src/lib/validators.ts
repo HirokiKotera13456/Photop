@@ -15,16 +15,6 @@ export const captionSchema = z
   .optional()
   .or(z.literal(''));
 
-export const inviteCodeSchema = z
-  .string()
-  .min(1, '招待コードを入力してください')
-  .regex(/^[A-Za-z0-9]{6}$/, '招待コードは英数字6桁です');
-
-export const commentBodySchema = z
-  .string()
-  .min(1, 'コメントを入力してください')
-  .max(200, 'コメントは200文字以内で入力してください');
-
 export const loginFormSchema = z.object({
   email: emailSchema,
   password: passwordSchema,

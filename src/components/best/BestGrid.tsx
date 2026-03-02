@@ -2,13 +2,14 @@ import { Box, ImageList, ImageListItem, Typography, CircularProgress, Alert } fr
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useMonthlyBest } from '@/src/hooks/useMonthlyBest';
 import { usePhotoUrl } from '@/src/hooks/usePhotos';
+import type { Tables } from '@/src/types/database';
 
 function BestPhotoItem({
   photo,
   isSelected,
   onSelect,
 }: {
-  photo: any;
+  photo: Tables<'photos'>;
   isSelected: boolean;
   onSelect: () => void;
 }) {
@@ -51,7 +52,7 @@ function BestPhotoItem({
 }
 
 export default function BestGrid() {
-  const { partnerPhotos, mySelection, isLoading, selectBest } = useMonthlyBest();
+  const { myPhotos, mySelection, isLoading, selectBest } = useMonthlyBest();
 
   if (isLoading) {
     return (
@@ -61,11 +62,11 @@ export default function BestGrid() {
     );
   }
 
-  if (partnerPhotos.length === 0) {
+  if (myPhotos.length === 0) {
     return (
       <Box sx={{ textAlign: 'center', py: 6 }}>
         <Typography color="text.secondary">
-          今月のパートナーの写真はまだありません
+          今月の写真はまだありません。まず写真を投稿しましょう!
         </Typography>
       </Box>
     );
@@ -79,10 +80,10 @@ export default function BestGrid() {
         </Alert>
       )}
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        パートナーの今月の写真から、ベストを1枚選んでください
+        今月の写真から、ベストを1枚選んでください
       </Typography>
       <ImageList cols={2} gap={8}>
-        {partnerPhotos.map((photo: any) => (
+        {myPhotos.map((photo) => (
           <BestPhotoItem
             key={photo.id}
             photo={photo}

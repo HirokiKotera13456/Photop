@@ -10,17 +10,18 @@ function ArchiveContent() {
   const { archive, isLoading } = useArchive();
   const [monthIndex, setMonthIndex] = useState(0);
 
-  const groupedByMonth = useMemo(() => {
-    const map = new Map<string, any[]>();
+  const months = useMemo(() => {
+    const set = new Set<string>();
     for (const item of archive as any[]) {
-      const existing = map.get(item.month) ?? [];
-      existing.push(item);
-      map.set(item.month, existing);
+      set.add(item.month);
     }
-    return map;
+    return Array.from(set);
   }, [archive]);
 
-  const months = useMemo(() => Array.from(groupedByMonth.keys()), [groupedByMonth]);
+  const currentMonthBest = useMemo(() => {
+    if (months.length === 0) return null;
+    return (archive as any[]).find((item: any) => item.month === months[monthIndex]) ?? null;
+  }, [archive, months, monthIndex]);
 
   if (isLoading) {
     return (
@@ -48,11 +49,8 @@ function ArchiveContent() {
               currentIndex={monthIndex}
               onChange={setMonthIndex}
             />
-            {months[monthIndex] && (
-              <ArchiveCard
-                month={months[monthIndex]}
-                bests={(groupedByMonth.get(months[monthIndex]) ?? []) as any}
-              />
+            {currentMonthBest && (
+              <ArchiveCard month={months[monthIndex]} best={currentMonthBest} />
             )}
           </>
         )}

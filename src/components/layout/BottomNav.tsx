@@ -4,14 +4,12 @@ import { BottomNavigation, BottomNavigationAction, Paper } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 const navItems = [
   { label: 'フィード', icon: <HomeIcon />, path: '/feed' },
   { label: '投稿', icon: <AddAPhotoIcon />, path: '/post' },
   { label: 'ベスト', icon: <EmojiEventsIcon />, path: '/best' },
-  { label: 'アーカイブ', icon: <PhotoLibraryIcon />, path: '/archive' },
   { label: '設定', icon: <SettingsIcon />, path: '/settings' },
 ];
 

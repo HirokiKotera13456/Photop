@@ -1,27 +1,25 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/src/lib/supabase/client';
 import { useAuth } from './useAuth';
-import { usePair } from './usePair';
 import { getStoragePath, formatMonth } from '@/src/lib/utils';
 
 const PAGE_SIZE = 10;
 
 export function usePhotos() {
   const { user } = useAuth();
-  const { pair } = usePair();
   const queryClient = useQueryClient();
 
   const feedQuery = useInfiniteQuery({
-    queryKey: ['photos', 'feed', pair?.id],
+    queryKey: ['photos', 'feed', user?.id],
     queryFn: async ({ pageParam = 0 }) => {
-      if (!pair) return { data: [], nextPage: null };
+      if (!user) return { data: [], nextPage: null };
       const from = pageParam * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
       const { data, error } = await supabase
         .from('photos')
-        .select('*, profiles!user_id(display_name, avatar_url), likes(count), comments(count)')
-        .eq('pair_id', pair.id)
+        .select('*')
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .range(from, to);
 
@@ -33,12 +31,12 @@ export function usePhotos() {
     },
     getNextPageParam: (lastPage) => lastPage.nextPage,
     initialPageParam: 0,
-    enabled: !!pair,
+    enabled: !!user,
   });
 
   const uploadPhoto = useMutation({
     mutationFn: async ({ file, caption }: { file: File; caption?: string }) => {
-      if (!user || !pair) throw new Error('認証またはペアが必要です');
+      if (!user) throw new Error('認証が必要です');
 
       const storagePath = getStoragePath(user.id, file.name);
 
@@ -53,7 +51,6 @@ export function usePhotos() {
         .from('photos')
         .insert({
           user_id: user.id,
-          pair_id: pair.id,
           storage_path: storagePath,
           caption: caption || null,
           month,
@@ -108,7 +105,7 @@ export function usePhotoDetail(photoId: string | undefined) {
       if (!photoId) return null;
       const { data, error } = await supabase
         .from('photos')
-        .select('*, profiles!user_id(display_name, avatar_url), likes(count), comments(count)')
+        .select('*')
         .eq('id', photoId)
         .single();
       if (error) throw error;

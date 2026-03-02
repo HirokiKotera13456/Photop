@@ -1,56 +1,51 @@
-import { Box, Card, CardContent, CardMedia, Typography, Stack } from '@mui/material';
+import { Card, CardContent, CardMedia, Typography } from '@mui/material';
 import { usePhotoUrl } from '@/src/hooks/usePhotos';
 import { formatDisplayMonth } from '@/src/lib/utils';
 
 interface ArchiveCardProps {
   month: string;
-  bests: {
+  best: {
     id: string;
     photos: {
       storage_path: string;
       caption: string | null;
-      profiles: { display_name: string; avatar_url: string | null } | null;
     } | null;
-  }[];
+  };
 }
 
-function ArchivePhotoThumb({ storagePath, name }: { storagePath: string; name: string }) {
+function ArchivePhoto({ storagePath, caption }: { storagePath: string; caption: string | null }) {
   const { data: imageUrl } = usePhotoUrl(storagePath);
   return (
-    <Box sx={{ flex: 1, minWidth: 0 }}>
+    <>
       {imageUrl && (
         <CardMedia
           component="img"
           image={imageUrl}
           alt="ベスト写真"
-          sx={{ height: 180, objectFit: 'cover', borderRadius: 1 }}
+          sx={{ height: 300, objectFit: 'cover' }}
         />
       )}
-      <Typography variant="caption" sx={{ mt: 0.5, display: 'block' }}>
-        {name}
-      </Typography>
-    </Box>
+      {caption && (
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          {caption}
+        </Typography>
+      )}
+    </>
   );
 }
 
-export default function ArchiveCard({ month, bests }: ArchiveCardProps) {
+export default function ArchiveCard({ month, best }: ArchiveCardProps) {
   return (
     <Card sx={{ mb: 2 }}>
       <CardContent>
         <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
           {formatDisplayMonth(month)}
         </Typography>
-        <Stack direction="row" spacing={1}>
-          {bests.map((best) =>
-            best.photos ? (
-              <ArchivePhotoThumb
-                key={best.id}
-                storagePath={best.photos.storage_path}
-                name={best.photos.profiles?.display_name ?? ''}
-              />
-            ) : null
-          )}
-        </Stack>
+        {best.photos ? (
+          <ArchivePhoto storagePath={best.photos.storage_path} caption={best.photos.caption} />
+        ) : (
+          <Typography color="text.secondary">写真が削除されました</Typography>
+        )}
       </CardContent>
     </Card>
   );

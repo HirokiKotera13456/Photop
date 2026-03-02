@@ -1,6 +1,7 @@
 import { Box, Button, CircularProgress, Typography } from '@mui/material';
 import { usePhotos } from '@/src/hooks/usePhotos';
 import PhotoCard from './PhotoCard';
+import type { Tables } from '@/src/types/database';
 
 export default function FeedList() {
   const { photos, feedQuery } = usePhotos();
@@ -25,7 +26,7 @@ export default function FeedList() {
 
   return (
     <Box>
-      {photos.map((photo: any) => (
+      {photos.map((photo: Tables<'photos'>) => (
         <PhotoCard key={photo.id} photo={photo} />
       ))}
       {feedQuery.hasNextPage && (

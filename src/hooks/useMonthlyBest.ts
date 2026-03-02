@@ -1,48 +1,44 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/src/lib/supabase/client';
 import { useAuth } from './useAuth';
-import { usePair } from './usePair';
 import { formatMonth } from '@/src/lib/utils';
 import type { Tables } from '@/src/types/database';
 
 export function useMonthlyBest() {
   const { user } = useAuth();
-  const { pair } = usePair();
   const queryClient = useQueryClient();
   const currentMonth = formatMonth();
 
-  const partnerPhotosQuery = useQuery<any[]>({
-    queryKey: ['partner-photos', pair?.id, currentMonth],
+  const myPhotosQuery = useQuery<Tables<'photos'>[]>({
+    queryKey: ['my-photos-month', user?.id, currentMonth],
     queryFn: async () => {
-      if (!user || !pair) return [];
+      if (!user) return [];
       const { data, error } = await supabase
         .from('photos')
-        .select('*, profiles!user_id(display_name, avatar_url)')
-        .eq('pair_id', pair.id)
+        .select('*')
+        .eq('user_id', user.id)
         .eq('month', currentMonth)
-        .neq('user_id', user.id)
         .order('created_at', { ascending: false });
       if (error) throw error;
       return data ?? [];
     },
-    enabled: !!user && !!pair,
+    enabled: !!user,
   });
 
   const mySelectionQuery = useQuery<Tables<'monthly_bests'> | null>({
-    queryKey: ['my-best-selection', pair?.id, currentMonth],
+    queryKey: ['my-best-selection', user?.id, currentMonth],
     queryFn: async () => {
-      if (!user || !pair) return null;
+      if (!user) return null;
       const { data, error } = await supabase
         .from('monthly_bests')
         .select('*')
-        .eq('pair_id', pair.id)
-        .eq('selector_id', user.id)
+        .eq('user_id', user.id)
         .eq('month', currentMonth)
         .maybeSingle();
       if (error) throw error;
       return data;
     },
-    enabled: !!user && !!pair,
+    enabled: !!user,
   });
 
   const selectBest = useMutation({
@@ -59,9 +55,9 @@ export function useMonthlyBest() {
   });
 
   return {
-    partnerPhotos: partnerPhotosQuery.data ?? [],
+    myPhotos: myPhotosQuery.data ?? [],
     mySelection: mySelectionQuery.data,
-    isLoading: partnerPhotosQuery.isLoading,
+    isLoading: myPhotosQuery.isLoading,
     selectBest,
   };
 }

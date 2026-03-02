@@ -1,6 +1,6 @@
 -- ============================================================
 -- 00004_create_storage.sql
--- Photop: Storage バケット & ポリシー
+-- Photop: Storage バケット & ポリシー（個人ポートフォリオ版）
 -- ============================================================
 
 -- photos バケット作成（非公開）
@@ -27,18 +27,13 @@ create policy "storage: 自分のパスにアップロード"
     and (storage.foldername(name))[1] = auth.uid()::text
   );
 
--- 閲覧: ペアの2人のみ読み取り可
-create policy "storage: ペア内の写真を閲覧"
+-- 閲覧: 自分のファイルのみ読み取り可
+create policy "storage: 自分の写真を閲覧"
   on storage.objects for select
   to authenticated
   using (
     bucket_id = 'photos'
-    and (
-      -- 自分のファイル
-      (storage.foldername(name))[1] = auth.uid()::text
-      -- またはペア相手のファイル
-      or public.is_pair_partner(((storage.foldername(name))[1])::uuid)
-    )
+    and (storage.foldername(name))[1] = auth.uid()::text
   );
 
 -- 更新: 自分のファイルのみ
